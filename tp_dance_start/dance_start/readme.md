@@ -7,9 +7,22 @@ TP réalisé par BLUMET Thomas et HALVICK Thomas (Polytech Lyon - M2IA) 11/2024
 
 [Allez voir le sujet du TP ici](http://alexandre.meyer.pages.univ-lyon1.fr/m2-apprentissage-profond-image/am/tp_dance/)
 
-# How to run the code for the GenGAN trained network
+# How to run the code using the GenGAN trained network
+
+Les poids du réseau GenGAN entraîné ont été enregistrés dans le fichier `data/Dance/DanceGenGAN.pth`. Pour observer l'aperçu que cela donne avec la lecture d'une vidéo (e.g. taichi2.mp4), il faut sélectionner `GEN_TYPE = 4` dans le fichier `DanceDemo.py`. En executant ce fichier, on obtient la génération succesive d'images se rapprochant le plus des postures présentes dans la vidéo.
 
 # How to train the network
+
+Afin de profiter de l'entraînement réalisé pour le generator codé dans le fichier `GenVanillaNN.py`, l'entraînement du réseau GAN charge comme modèle de generator celui stocké (via ses valeurs de poids) dans le fichier `data/Dance/DanceGenVanillaFromSke.pth`, évitant de repartir de zéro pour l'entraînement du generator. En fixant le booléen True dans le code suivant (situé à la fin du fichier `GenGAN.py`), la boucle d'entraînement est alors réalisé pour un nombre d'epochs fixé ici à 20 :
+``` 
+    if True:    # train=True or load=False
+        # Train
+        gen = GenGAN(targetVideoSke, False)
+        gen.train(20) #5) #200)
+    else:
+        # load from file 
+        gen = GenGAN(targetVideoSke, loadFromFile=True)    
+```
 
 # What we did concretly ?
 Le TP a eu pour principal objectif d'introduire l'utilisation de réseau de neurones GAN au travers de la reproduction de mouvements d'une personne (source) tirés d'une vidéo (ici des mouvements de karaté/taichi) et de les appliqués sur les mouvements d'une personne cible. Pour cela, le TP propose une évolution progessive :

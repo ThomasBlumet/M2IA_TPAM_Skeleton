@@ -84,7 +84,7 @@ class GenGAN():
             print("GenGAN: Load=", self.filename, "   Current Working Directory=", os.getcwd())
             self.netG = torch.load(self.filename)
         else:
-            self.netG = torch.load(self.filenameOldGen)
+            self.netG = torch.load(self.filenameOldGen) # load the old generator train in GenVanillaNN for training the new generator in GenGAN
 
 
     def train(self, n_epochs=20):
@@ -121,7 +121,7 @@ class GenGAN():
                 D_x = output.mean().item()
 
                 ## Train with all-fake batch
-                #C'est là la différence: nous on ne génère pas de fake image avec du bruit, mais à partir d'un squelette
+                #HERE it's the difference: we don't generate fake image with noise, but from a skeleton
                 ske_input = data[0].to(self.device)
                 # Generate fake image batch with Generator taking a skeleton as Generator input
                 fake = self.netG(ske_input)  # replace the previous instruction self.netG(noise) 
@@ -130,21 +130,13 @@ class GenGAN():
                 output = self.netD(fake.detach()).view(-1)
                 # Calculate Discriminator's loss on the all-fake batch
                 errD_fake = criterion(output, label)
-
-                loss_G = criterion(fake, label) + errD_fake
-
                 # Calculate the gradients for this batch, accumulated (summed) with previous gradients
                 errD_fake.backward()
-
-                loss_G.backward()
-
                 D_G_z1 = output.mean().item()
                 # Compute error of D as sum over the fake and the real batches
                 errD = errD_real + errD_fake
                 # Update D
                 optimizerD.step()
-
-                optimizerG.step()
 
                 ############################
                 # (2) Update G network: maximize log(D(G(z)))
@@ -153,8 +145,14 @@ class GenGAN():
                 label.fill_(self.real_label)  # fake labels are real for generator cost
                 # Since we just updated Discriminator, perform another forward pass of all-fake batch through D
                 output = self.netD(fake).view(-1)
+                
                 # Calculate G's loss based on this output
-                errG = criterion(output, label)
+                errG = criterion(output, label) #-> ensure that G is able to fool the D by generating realistic images
+                l1_loss = F.l1_loss(fake, real_cpu) #-> ensure that G generates images (give here with fake) that are close to the real images (give here with real_cpu)
+                                                    # measure the pixel-wise difference between the generated image and the real image
+                # Total Generator loss
+                errG = errG + 10*l1_loss #-> combining losses ensure that G generates images that are realistic and similar to the real images
+                                        #-> the 10 is a hyperparameter that can be tuned ; allows to balance the importance of l1_loss
                 # Calculate gradients for G
                 errG.backward()
                 D_G_z2 = output.mean().item()
