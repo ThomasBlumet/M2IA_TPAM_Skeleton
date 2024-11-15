@@ -214,7 +214,7 @@ if __name__ == '__main__':
     if True:    # train or load
         # Train
         gen = GenGAN(targetVideoSke, False)
-        gen.train(20) #5) #200)
+        gen.train(20) #20) 5) #200)
     else:
         gen = GenGAN(targetVideoSke, loadFromFile=True)    # load from file        
 
@@ -225,5 +225,7 @@ if __name__ == '__main__':
         nouvelle_taille = (256, 256) 
         image = cv2.resize(image, nouvelle_taille)
         cv2.imshow('Image', image)
-        key = cv2.waitKey(-1)
+        if cv2.waitKey(-1) == ord('q'):
+            break
+    cv2.destroyAllWindows()
 

@@ -207,6 +207,7 @@ class GenVanillaNN():
                     #print ("output = {}".format(output))
 
         torch.save(self.netG, self.filename)
+        print(f"End of training, model saved in {self.filename}")
         #pass
 
         
@@ -228,7 +229,7 @@ class GenVanillaNN():
 if __name__ == '__main__':
     force = False
     optSkeOrImage = 1 #2           # use as input a skeleton (1) or an image with a skeleton drawed (2)
-    n_epoch = 15 # 200
+    n_epoch = 15 #15 200
     #train = 1 #False
     train = True
 
@@ -259,4 +260,7 @@ if __name__ == '__main__':
         nouvelle_taille = (256, 256) 
         image = cv2.resize(image, nouvelle_taille)
         cv2.imshow('Image', image)
-        key = cv2.waitKey(-1)
+        if cv2.waitKey(-1) == ord('q'):
+            break
+    cv2.destroyAllWindows()
+        
