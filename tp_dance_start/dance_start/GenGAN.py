@@ -83,8 +83,9 @@ class GenGAN():
         if loadFromFile and os.path.isfile(self.filename):
             print("GenGAN: Load=", self.filename, "   Current Working Directory=", os.getcwd())
             self.netG = torch.load(self.filename)
-        else:
-            self.netG = torch.load(self.filenameOldGen) # load the old generator train in GenVanillaNN for training the new generator in GenGAN
+        # else:
+        #     print("GenGAN: Load=", self.filenameOldGen, "   Current Working Directory=", os.getcwd())
+        #     self.netG = torch.load(self.filenameOldGen) # load the old generator train in GenVanillaNN for training the new generator in GenGAN
 
 
     def train(self, n_epochs=20):
@@ -93,10 +94,9 @@ class GenGAN():
         optimizerD = torch.optim.Adam(self.netD.parameters(), lr=0.001, betas=(0.5, 0.999))
         optimizerG = torch.optim.Adam(self.netG.parameters(), lr=0.001, betas=(0.5, 0.999))
         # Lists to keep track of progress
-        img_list = []
         G_losses = []
         D_losses = []
-
+        l1_loss_weight = 0
         print("Starting Training Loop...")
         # For each epoch
         for epoch in range(n_epochs):
@@ -134,7 +134,8 @@ class GenGAN():
                 errD_fake.backward()
                 D_G_z1 = output.mean().item()
                 # Compute error of D as sum over the fake and the real batches
-                errD = errD_real + errD_fake
+                errD = errD_real + errD_fake #/2 pas origine dans le code
+                #errD.backward()# pas origine dans le code
                 # Update D
                 optimizerD.step()
 
@@ -151,7 +152,8 @@ class GenGAN():
                 l1_loss = F.l1_loss(fake, real_cpu) #-> ensure that G generates images (give here with fake) that are close to the real images (give here with real_cpu)
                                                     # measure the pixel-wise difference between the generated image and the real image
                 # Total Generator loss
-                errG = errG + 10*l1_loss #-> combining losses ensure that G generates images that are realistic and similar to the real images
+                l1_loss_weight = 100
+                errG = errG + l1_loss_weight*l1_loss #-> combining losses ensure that G generates images that are realistic and similar to the real images
                                         #-> the 10 is a hyperparameter that can be tuned ; allows to balance the importance of l1_loss
                 # Calculate gradients for G
                 errG.backward()
@@ -172,17 +174,17 @@ class GenGAN():
         # Save the new model fo Generator
         torch.save(self.netG, self.filename)
         print("Model netG saved ")
-        print("Training is done")
+        print(f"Training is done : for epochs={n_epochs}")
         
         #Plot the training losses as information
-        # plt.figure(figsize=(10,5))
-        # plt.title("Generator and Discriminator Loss During Training")
-        # plt.plot(G_losses,label="G")
-        # plt.plot(D_losses,label="D")
-        # plt.xlabel("iterations")
-        # plt.ylabel("Loss")
-        # plt.legend()
-        # plt.show()
+        plt.figure(figsize=(10,5))
+        plt.title("Generator and Discriminator Loss During Training")
+        plt.plot(G_losses,label="G")
+        plt.plot(D_losses,label="D")
+        plt.xlabel("iterations")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.show()
         
 
     
@@ -213,8 +215,8 @@ if __name__ == '__main__':
     #if False:
     if True:    # train or load
         # Train
-        gen = GenGAN(targetVideoSke, False)
-        gen.train(20) #20) 5) #200)
+        gen = GenGAN(targetVideoSke,False)#False)
+        gen.train(200) #20) 5) #200)
     else:
         gen = GenGAN(targetVideoSke, loadFromFile=True)    # load from file        
 
