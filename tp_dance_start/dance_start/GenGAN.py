@@ -65,7 +65,7 @@ class GenGAN():
         self.netD = Discriminator()
         self.real_label = 1.
         self.fake_label = 0.
-        self.filename = 'data/Dance/DanceGenGAN.pth'
+        self.filename = 'data/Dance/DanceGenGAN500.pth'#de base avec 200 epochs et aussi un autre avec 1000
         self.filenameOldGen = 'data/Dance/DanceGenVanillaFromSke.pth' # to load the old generator train in GenVanillaNN
         tgt_transform = transforms.Compose(
                             [transforms.Resize((64, 64)),
@@ -82,7 +82,7 @@ class GenGAN():
 
         if loadFromFile and os.path.isfile(self.filename):
             print("GenGAN: Load=", self.filename, "   Current Working Directory=", os.getcwd())
-            self.netG = torch.load(self.filename)
+            self.netG = torch.load(self.filename, map_location=self.device)
         # else:
         #     print("GenGAN: Load=", self.filenameOldGen, "   Current Working Directory=", os.getcwd())
         #     self.netG = torch.load(self.filenameOldGen) # load the old generator train in GenVanillaNN for training the new generator in GenGAN
@@ -206,19 +206,20 @@ if __name__ == '__main__':
         if len(sys.argv) > 2:
             force = sys.argv[2].lower() == "true"
     else:
-        filename = "data/taichi1.mp4"
+        filename = "data/taichi1.mp4" #data/taichi1.mp4
     print("GenGAN: Current Working Directory=", os.getcwd())
     print("GenGAN: Filename=", filename)
 
     targetVideoSke = VideoSkeleton(filename)
 
     #if False:
-    if True:    # train or load
+    if False:    
         # Train
         gen = GenGAN(targetVideoSke,False)#False)
         gen.train(200) #20) 5) #200)
     else:
-        gen = GenGAN(targetVideoSke, loadFromFile=True)    # load from file        
+        # load from file
+        gen = GenGAN(targetVideoSke, loadFromFile=True)            
 
 
     for i in range(targetVideoSke.skeCount()):
