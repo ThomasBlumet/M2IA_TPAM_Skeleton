@@ -65,8 +65,7 @@ class GenGAN():
         self.netD = Discriminator()
         self.real_label = 1.
         self.fake_label = 0.
-        self.filename = 'data/Dance/DanceGenGAN500.pth'#de base avec 200 epochs et aussi un autre avec 1000
-        self.filenameOldGen = 'data/Dance/DanceGenVanillaFromSke.pth' # to load the old generator train in GenVanillaNN
+        self.filename = 'data/Dance/DanceGenGAN200.pth'# there's one with 200 epochs and an another with 1000 epochs (DanceGenGAN1000.pth)
         tgt_transform = transforms.Compose(
                             [transforms.Resize((64, 64)),
                             #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -83,10 +82,6 @@ class GenGAN():
         if loadFromFile and os.path.isfile(self.filename):
             print("GenGAN: Load=", self.filename, "   Current Working Directory=", os.getcwd())
             self.netG = torch.load(self.filename, map_location=self.device)
-        # else:
-        #     print("GenGAN: Load=", self.filenameOldGen, "   Current Working Directory=", os.getcwd())
-        #     self.netG = torch.load(self.filenameOldGen) # load the old generator train in GenVanillaNN for training the new generator in GenGAN
-
 
     def train(self, n_epochs=20):
         #pass
@@ -134,8 +129,7 @@ class GenGAN():
                 errD_fake.backward()
                 D_G_z1 = output.mean().item()
                 # Compute error of D as sum over the fake and the real batches
-                errD = errD_real + errD_fake #/2 pas origine dans le code
-                #errD.backward()# pas origine dans le code
+                errD = errD_real + errD_fake 
                 # Update D
                 optimizerD.step()
 
@@ -213,10 +207,10 @@ if __name__ == '__main__':
     targetVideoSke = VideoSkeleton(filename)
 
     #if False:
-    if False:    
+    if True:    
         # Train
         gen = GenGAN(targetVideoSke,False)#False)
-        gen.train(200) #20) 5) #200)
+        gen.train(1000) #200)
     else:
         # load from file
         gen = GenGAN(targetVideoSke, loadFromFile=True)            
