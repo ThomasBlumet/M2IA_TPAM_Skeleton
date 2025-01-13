@@ -181,6 +181,8 @@ class GenVanillaNN():
                             # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                             ])
         self.dataset = VideoSkeletonDataset(videoSke, ske_reduced=True, target_transform=tgt_transform, source_transform=src_transform)
+        if (len(self.dataset) == 0):
+            raise ValueError("GenVanillaNN: No skeleton in the dataset")
         self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=16, shuffle=True)
         if loadFromFile and os.path.isfile(self.filename):
             print("GenVanillaNN: Load=", self.filename)
@@ -231,7 +233,7 @@ if __name__ == '__main__':
     optSkeOrImage = 1 #2           # use as input a skeleton (1) or an image with a skeleton drawed (2)
     n_epoch = 50 #15 200
     #train = 1 #False
-    train = True
+    train = False #True
 
     if len(sys.argv) > 1:
         filename = sys.argv[1]

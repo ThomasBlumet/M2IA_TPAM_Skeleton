@@ -13,7 +13,6 @@ from GenVanillaNN import *
 from GenGAN import *
 from torch.utils import tensorboard
 
-
 class DanceDemo:
     """ class that run a demo of the dance.
         The animation/posture from self.source is applied to character define self.target using self.gen
@@ -69,7 +68,7 @@ if __name__ == '__main__':
     # VANILLA_NN_SKE = 2
     # VANILLA_NN_Image = 3
     # GAN = 4
-    GEN_TYPE = 4 #1 or 2
+    GEN_TYPE = 2 #1 or 2
     #ddemo = DanceDemo("data/taichi2.mp4", GEN_TYPE)
     ddemo = DanceDemo("data/taichi1.mp4", GEN_TYPE)
     #ddemo = DanceDemo("data/karate1.mp4", GEN_TYPE)
