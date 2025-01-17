@@ -5,6 +5,8 @@ TP réalisé par BLUMET Thomas et HALVICK Thomas (Polytech Lyon - M2IA) 11/2024
 
 ![Demo](GIF_TP_AM.gif)
 
+# Vidéo de démonstration
+[![Vidéo Youtube explicative de l'exécution des différents codes implémentés](https://img.youtube.com/vi/8fbu6_iinWM/0.jpg)](https://www.youtube.com/embed/8fbu6_iinWM?si=CVHGjojLSWRY1LZk)
 
 # Objectif de ce code
 (Ce code est indépendant de tout le reste du dépôt)
